@@ -95,7 +95,8 @@ def warpPerspective(img, H, output_shape):
     return warped_img
 
 class PointEstimatorCNN(nn.Module):
-    def __init__(self, input_shape=(3, 224, 224), features=[64, 128, 256, 384, 512, 1024, 2048], dims=[2048], final_dim=8):
+    def __init__(self, input_shape=(3, 224, 224), features=[64, 128, 256, 384, 512, 1024], dims=[2048], final_dim=8):
+        """ 64 -> 128 -> 256 -> 384 -> 384 -> 512 -> 1024 -> 2048 """
         super(PointEstimatorCNN, self).__init__()
 
         layers = []
@@ -114,9 +115,7 @@ class PointEstimatorCNN(nn.Module):
 
     def get_flatten_dim(self, input_shape, features):
         x = torch.zeros(1, *input_shape)
-        # print(x.shape)
         x = features(x)
-        # print(x.shape)
         return x.view(1, -1).size(1)
 
     def forward(self, x):
@@ -126,7 +125,7 @@ class PointEstimatorCNN(nn.Module):
         return x
 
 model = PointEstimatorCNN()
-model.load_state_dict(torch.load('/home/teerawat.c/homography-projects/cp/0.2993_epoch32.pth'))
+model.load_state_dict(torch.load('/mnt/c/Users/teraw/Developer/homography-projects/cp/224/p2/best_loss_0.6985_epoch46.pth'))
 model.eval()  # Set the model to evaluation mode
 
 # Preprocessing the image for the model (adjust based on your model's input size)
@@ -186,7 +185,7 @@ iface = gr.Interface(
     fn=gradio_demo,
     inputs=gr.Image(type="numpy", label="Input Image"),  # Updated syntax
     outputs=gr.Image(type="numpy", label="Warped Output"),  # Updated syntax
-    title="Point Estimation for Homography",
+    title="Restore Perspective Distortion Photos with Convolutional Neural Networks",
     description="Upload an image to estimate the homography using the PointEstimatorCNN model."
 )
 
